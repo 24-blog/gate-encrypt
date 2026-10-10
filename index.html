@@ -3,86 +3,158 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GATE暗号化ツール</title>
+<title>暗号化ゲートジェネレーター</title>
 <style>
-body{font-family:'Hiragino Mincho ProN','Noto Serif JP',serif;background:#161412;color:#c8b98a;max-width:760px;margin:0 auto;padding:24px 16px 60px;line-height:1.7}
-h1{font-size:1.1rem;letter-spacing:.2em;font-weight:400;color:#d4c090}
-label{display:block;margin-top:16px;font-size:.8rem;color:#9a8a60}
-input,textarea{width:100%;box-sizing:border-box;background:#0e0c0a;color:#c8b98a;border:1px solid #3a3020;padding:8px;font-family:ui-monospace,monospace;font-size:.85rem}
-textarea{min-height:160px}
-button{margin-top:14px;margin-right:8px;padding:9px 18px;background:transparent;color:#c8b98a;border:1px solid #7a6030;cursor:pointer;font-family:inherit}
-button:hover{background:#7a6030;color:#f5ecd0}
-iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-top:8px}
-.note{font-size:.75rem;color:#7a6a4a}
+:root{--ac:#4f46e5;--ac2:#4338ca;--bd:#e5e7eb;--tx:#111827;--sub:#6b7280;--bg:#f6f7fb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.7}
+main{max-width:720px;margin:0 auto;padding:40px 16px 80px}
+header{text-align:center;margin-bottom:28px}
+.logo{width:52px;height:52px;border-radius:50%;background:#eef2ff;display:inline-flex;align-items:center;justify-content:center}
+h1{font-size:1.4rem;margin:14px 0 6px}
+header p{color:var(--sub);margin:0;font-size:.92rem}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(17,24,39,.06);margin-bottom:20px}
+label{display:block;font-size:.82rem;font-weight:600;margin:16px 0 6px}
+.card>label:first-child{margin-top:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+input[type=text],input[type=password],textarea{width:100%;padding:11px 13px;border:1px solid #d1d5db;border-radius:10px;font:inherit;font-size:16px;color:var(--tx);background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+textarea{min-height:170px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}
+input:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.pwrow{display:flex;gap:8px;align-items:center}
+.pwrow label{margin:0;font-weight:400;white-space:nowrap;display:flex;gap:4px;align-items:center;color:var(--sub)}
+.meter{height:6px;border-radius:3px;background:#eef0f4;margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:#dc2626;transition:width .25s,background .25s}
+.msg{font-size:.78rem;color:var(--sub);margin-top:6px;min-height:1.2em}
+.seg{display:flex;gap:8px}
+.seg label{margin:0;font-weight:500;cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid #d1d5db;border-radius:10px;font-size:.88rem;transition:all .2s}
+.seg i{width:14px;height:14px;border-radius:50%;border:1px solid #9ca3af;display:inline-block}
+.seg .l i{background:#fff}.seg .d i{background:#1a1b23}
+.seg input:checked+span{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.15);color:var(--ac)}
+.seg input:focus-visible+span{outline:2px solid var(--ac)}
+.btn{display:inline-block;padding:11px 20px;border:none;border-radius:10px;background:var(--ac);color:#fff;font:inherit;font-weight:600;cursor:pointer;transition:background .2s}
+.btn:hover{background:var(--ac2)}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.ghost{background:#eef2ff;color:var(--ac)}
+.btn.ghost:hover{background:#e0e7ff}
+.actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+iframe{width:100%;height:360px;border:1px solid var(--bd);border-radius:12px;background:#fff}
+details{font-size:.86rem;color:var(--sub)}
+summary{cursor:pointer;font-weight:600;color:var(--tx)}
+details ul{padding-left:1.2em;margin:10px 0 0}
+details li{margin-bottom:6px}
+footer{text-align:center;font-size:.78rem;color:var(--sub)}
 </style>
 </head>
 <body>
-<h1>GATE暗号化ツール</h1>
-<p class="note">このページはブラウザ内だけで動作し、入力内容はどこにも送信されません。</p>
+<main>
+<header>
+  <span class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+  <h1>暗号化ゲートジェネレーター</h1>
+  <p>ブログに貼るだけのパスワード付きブロックを、ブラウザ内で暗号化して作ります。</p>
+</header>
 
-<label>タイトル</label>
-<input id="title" value="GATE">
-<label>ヒント表示（空欄で非表示。※パスワード自体は書かないこと）</label>
-<input id="hint" value="">
-<label>パスワード（長いほど安全）</label>
-<input id="pw" type="text" autocomplete="off">
-<label>隠したい本文（HTML）</label>
-<textarea id="body" placeholder="<p>ここに本文</p>"></textarea>
+<section class="card">
+  <label for="title">タイトル</label>
+  <input type="text" id="title" value="限定公開">
+  <div class="row">
+    <div><label for="desc">説明文</label><input type="text" id="desc" value="パスワードを入力してください"></div>
+    <div><label for="btn">ボタン文言</label><input type="text" id="btn" value="開く"></div>
+  </div>
 
-<button id="gen">暗号化して生成</button>
+  <label>テーマ</label>
+  <div class="seg">
+    <label><input type="radio" name="theme" value="light" checked><span class="l"><i></i>ライト</span></label>
+    <label><input type="radio" name="theme" value="dark"><span class="d"><i></i>ダーク</span></label>
+  </div>
 
-<div id="out" style="display:none">
-  <label>生成されたコード（ブログのHTML編集モードに貼り付け）</label>
+  <label for="pw">パスワード</label>
+  <div class="pwrow">
+    <input type="password" id="pw" autocomplete="new-password">
+    <label><input type="checkbox" id="show"> 表示</label>
+  </div>
+  <div class="meter"><i id="bar"></i></div>
+  <div class="msg" id="pwmsg">長いほど安全です。12文字以上を推奨します。</div>
+
+  <label for="body">隠したい本文（HTML）</label>
+  <textarea id="body" placeholder="<p>ここに本文を書きます</p>"></textarea>
+
+  <div class="actions"><button class="btn" id="gen">暗号化して生成</button></div>
+</section>
+
+<section class="card" id="out" style="display:none">
+  <label for="code">生成されたコード（ブログのHTML編集モードに貼り付け）</label>
   <textarea id="code" readonly></textarea>
-  <button id="copy">コピー</button>
-  <label>動作テスト</label>
+  <div class="actions"><button class="btn ghost" id="copy">コピー</button></div>
+  <label>動作テスト <span style="font-weight:400;color:var(--sub)">（テーマを切り替えると見た目だけ更新されます）</span></label>
   <iframe id="prev" sandbox="allow-scripts"></iframe>
-</div>
+</section>
+
+<section class="card">
+  <details>
+    <summary>仕組みと注意事項</summary>
+    <ul>
+      <li>入力内容はすべてブラウザ内で処理され、外部には送信されません。</li>
+      <li>本文はAES-256-GCMで暗号化され、鍵はPBKDF2（SHA-256・60万回）でパスワードから導出されます。生成コードにパスワードやハッシュは含まれません。</li>
+      <li>暗号文は誰でも入手できるため、オフライン総当たりは防げません。<b>短い・推測されやすいパスワードでは破られます。</b></li>
+      <li>説明文にパスワード自体を書かないでください。</li>
+      <li>テーマが変わるのはゲート部分だけです。解錠後の本文はブログ側のスタイルで表示されるため、ダークテーマはダーク系のブログでの利用を想定しています。</li>
+      <li>復号後の本文に含めた <code>&lt;script&gt;</code> は実行されません。画像URLは暗号化されますが、画像ファイルが公開されていればURLを知る人は閲覧できます。</li>
+      <li>復号にはHTTPS環境が必要です。ブログ側の記法はHTML編集モードにしてください。</li>
+      <li>同じページに複数のゲートを置いても干渉しません。</li>
+    </ul>
+  </details>
+</section>
+<footer>All processing happens in your browser.</footer>
+</main>
 
 <script>
 var ITER = 600000;
+var THEMES = {
+  light:{bg:'#ffffff',bd:'#e5e7eb',tx:'#111827',sub:'#6b7280',ac:'#4f46e5',ac2:'#4338ca',ib:'#eef2ff',inb:'#ffffff',inbd:'#d1d5db',sh:'0 10px 30px rgba(17,24,39,.08)',err:'#dc2626',ring:'rgba(79,70,229,.15)',bt:'#ffffff'},
+  dark:{bg:'#1a1b23',bd:'#2e303c',tx:'#f3f4f6',sub:'#9ca3af',ac:'#818cf8',ac2:'#6366f1',ib:'#26284a',inb:'#11121a',inbd:'#3a3d4d',sh:'0 10px 30px rgba(0,0,0,.45)',err:'#f87171',ring:'rgba(129,140,248,.25)',bt:'#0f1020'}
+};
 var TPL = [
-'<!-- GATE(encrypted) -->',
 '<style>',
 '#__P__wrap *{box-sizing:border-box}',
-'#__P__wrap{margin:2em 0;font-family:\'Noto Serif JP\',\'Hiragino Mincho ProN\',serif}',
-'#__P__gate{position:relative;max-width:420px;margin:0 auto;padding:44px 36px 36px;background:#161412;border:1px solid #3a3020;color:#c8b98a;text-align:center;animation:__P__fade .8s ease both}',
-'#__P__gate::before,#__P__gate::after,#__P__c1,#__P__c2{content:\'\';position:absolute;width:16px;height:16px;border-color:#7a6030;border-style:solid}',
-'#__P__gate::before{top:10px;left:10px;border-width:1px 0 0 1px}',
-'#__P__gate::after{bottom:10px;right:10px;border-width:0 1px 1px 0}',
-'#__P__c1{top:10px;right:10px;border-width:1px 1px 0 0}',
-'#__P__c2{bottom:10px;left:10px;border-width:0 0 1px 1px}',
-'.__P__icon{font-size:1.5rem;margin-bottom:12px;opacity:.5}',
-'.__P__title{font-size:.95rem;font-weight:400;letter-spacing:.25em;color:#d4c090;margin:0 0 4px;border:none!important;padding:0!important;background:none!important}',
-'.__P__rule{width:44px;height:1px;background:linear-gradient(90deg,transparent,#7a6030,transparent);margin:12px auto}',
-'.__P__hint{font-size:.72rem;color:#7a6a4a;letter-spacing:.05em;margin:0 0 24px;line-height:1.7}',
-'#__P__input{display:block;width:100%;padding:10px 12px;margin-bottom:12px;background:#0e0c0a;border:1px solid #3a3020!important;border-radius:0!important;color:#c8b98a!important;font-family:inherit;font-size:.85rem;letter-spacing:.12em;text-align:center;outline:none;transition:border-color .25s;box-shadow:none!important}',
-'#__P__input:focus{border-color:#7a6030!important}',
-'#__P__btn{display:block;width:100%;padding:10px;background:transparent!important;border:1px solid #7a6030!important;border-radius:0!important;color:#c8b98a!important;font-family:inherit;font-size:.78rem;letter-spacing:.35em;cursor:pointer;transition:background .25s,color .25s;box-shadow:none!important;text-decoration:none!important}',
-'#__P__btn:hover{background:#7a6030!important;color:#f5ecd0!important}',
-'#__P__error{font-size:.7rem;color:#9a5050;letter-spacing:.08em;margin-top:10px;min-height:1.1em}',
-'#__P__content{display:none;animation:__P__fade 1s ease both}',
+'#__P__wrap{__VARS__margin:2em 0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif}',
+'#__P__gate{max-width:400px;margin:0 auto;padding:36px 32px 32px;background:var(--__P__bg);border:1px solid var(--__P__bd);border-radius:16px;box-shadow:var(--__P__sh);color:var(--__P__tx);text-align:center;animation:__P__fade .6s ease both}',
+'.__P__icon{width:48px;height:48px;margin:0 auto;border-radius:50%;background:var(--__P__ib);color:var(--__P__ac);display:flex;align-items:center;justify-content:center}',
+'.__P__title{font-size:1.15rem;font-weight:600;color:var(--__P__tx);margin:14px 0 4px;border:none!important;padding:0!important;background:none!important;line-height:1.4}',
+'.__P__desc{font-size:.85rem;color:var(--__P__sub);margin:0 0 20px;line-height:1.6}',
+'#__P__input{display:block;width:100%;padding:12px 14px;margin:0 0 12px;background:var(--__P__inb)!important;border:1px solid var(--__P__inbd)!important;border-radius:10px!important;color:var(--__P__tx)!important;font-family:inherit;font-size:16px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;box-shadow:none!important}',
+'#__P__input:focus{border-color:var(--__P__ac)!important;box-shadow:0 0 0 3px var(--__P__ring)!important}',
+'#__P__btn{display:block;width:100%;padding:12px;background:var(--__P__ac)!important;border:none!important;border-radius:10px!important;color:var(--__P__bt)!important;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s;box-shadow:none!important;text-decoration:none!important}',
+'#__P__btn:hover{background:var(--__P__ac2)!important}',
+'#__P__btn:disabled{opacity:.6;cursor:default}',
+'#__P__error{font-size:.8rem;color:var(--__P__err);margin-top:10px;min-height:1.2em}',
+'#__P__content{display:none;animation:__P__fade .7s ease both}',
 '@keyframes __P__fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}',
 '@keyframes __P__shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}',
-'.__P__shake{animation:__P__shake .4s ease both}',
+'.__P__shake{animation:__P__shake .4s ease both!important}',
 '</style>',
 '<div id="__P__wrap">',
-'<div id="__P__gate"><span id="__P__c1"></span><span id="__P__c2"></span>',
-'<div class="__P__icon">&#x1f441;</div>',
-'<p class="__P__title">__TITLE__</p><div class="__P__rule"></div>',
-'__HINT__',
-'<input type="password" id="__P__input" placeholder="· · · · · · · ·" onkeydown="if(event.key===\'Enter\')__P__check()">',
-'<button id="__P__btn" onclick="__P__check()">解　門</button>',
-'<div id="__P__error"></div></div>',
+'<div id="__P__gate">',
+'<div class="__P__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>',
+'<p class="__P__title">__TITLE__</p>',
+'<p class="__P__desc">__DESC__</p>',
+'<input type="password" id="__P__input" autocomplete="off" onkeydown="if(event.key===\'Enter\')__F__()">',
+'<button id="__P__btn" onclick="__F__()">__BTN__</button>',
+'<div id="__P__error"></div>',
+'</div>',
 '<div id="__P__content"></div>',
 '</div>',
-'<script>',
+'<' + 'script>',
 '(function(){',
 'var D="__DATA__",N=__ITER__;',
 'function b64(s){var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}',
-'window.__P__check=async function(){',
-'var g=document.getElementById("__P__gate"),e=document.getElementById("__P__error"),c=document.getElementById("__P__content");',
-'var pw=document.getElementById("__P__input").value;',
+'window.__F__=async function(){',
+'var g=document.getElementById("__P__gate"),e=document.getElementById("__P__error"),c=document.getElementById("__P__content"),b=document.getElementById("__P__btn");',
+'if(b.disabled)return;',
+'var pw=document.getElementById("__P__input").value,lab=b.textContent;',
+'b.disabled=true;b.textContent="確認中…";',
 'try{',
 'if(!window.crypto||!crypto.subtle)throw new Error("nocrypto");',
 'var d=b64(D),salt=d.slice(0,16),iv=d.slice(16,28),ct=d.slice(28);',
@@ -94,6 +166,7 @@ var TPL = [
 'e.textContent=(x&&x.message==="nocrypto")?"この環境では復号できません（HTTPSが必要です）":"パスワードが違います";',
 'g.classList.remove("__P__shake");void g.offsetWidth;g.classList.add("__P__shake");',
 'setTimeout(function(){e.textContent=""},2500)}',
+'b.disabled=false;b.textContent=lab;',
 '};})();',
 '<' + '/script>'
 ].join('\n');
@@ -107,38 +180,65 @@ async function encrypt(plain, pw){
   var km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
   var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:ITER,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt']);
   var ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(plain)));
-  var out=new Uint8Array(16+12+ct.length);
+  var out=new Uint8Array(28+ct.length);
   out.set(salt,0);out.set(iv,16);out.set(ct,28);
   return toB64(out);
 }
 
-document.getElementById('gen').onclick=async function(){
-  var pw=document.getElementById('pw').value,
-      body=document.getElementById('body').value;
+function build(o){
+  var id='pg'+Math.random().toString(36).slice(2,7),
+      t=THEMES[o.theme]||THEMES.light,
+      vars=Object.keys(t).map(function(k){return '--__P__'+k+':'+t[k]+';'}).join('');
+  return TPL
+    .replace('__VARS__',vars)
+    .split('__F__').join(id+'check')
+    .split('__P__').join(id+'-')
+    .replace('__TITLE__',esc(o.title))
+    .replace('__DESC__',esc(o.desc))
+    .replace('__BTN__',esc(o.btn))
+    .replace('__DATA__',o.data)
+    .replace('__ITER__',ITER);
+}
+
+/* パスワード強度（簡易） */
+function strength(p){
+  if(!p)return {w:0,c:'#dc2626',m:'長いほど安全です。12文字以上を推奨します。'};
+  var kinds=(/[a-z]/.test(p)?1:0)+(/[A-Z]/.test(p)?1:0)+(/[0-9]/.test(p)?1:0)+(/[^A-Za-z0-9]/.test(p)?1:0);
+  var score=p.length*(kinds>=3?1.3:kinds==2?1.1:1);
+  if(p.length<8||score<9)return {w:25,c:'#dc2626',m:'弱すぎます。短いパスワードは数分で破られる可能性があります。'};
+  if(score<15)return {w:55,c:'#f59e0b',m:'もう少し長くすると安心です。'};
+  return {w:100,c:'#16a34a',m:'十分な長さです。'};
+}
+var $=function(i){return document.getElementById(i)};
+var last=null; // 直近に生成した内容（テーマ切替時の再構築用）
+function theme(){return document.querySelector('input[name=theme]:checked').value}
+function show(code){$('code').value=code;$('prev').srcdoc=code;$('out').style.display='block'}
+
+$('pw').oninput=function(){var s=strength(this.value);$('bar').style.width=s.w+'%';$('bar').style.background=s.c;$('pwmsg').textContent=s.m};
+$('show').onchange=function(){$('pw').type=this.checked?'text':'password'};
+Array.prototype.forEach.call(document.getElementsByName('theme'),function(r){
+  r.onchange=function(){if(last){last.theme=theme();show(build(last))}};
+});
+
+$('gen').onclick=async function(){
+  var pw=$('pw').value,body=$('body').value;
   if(!pw||!body){alert('パスワードと本文を入力してください');return}
-  this.disabled=true;this.textContent='生成中…';
+  if(!window.crypto||!crypto.subtle){alert('このブラウザ/環境ではWeb Crypto APIが使えません（HTTPSまたはlocalhostで開いてください）');return}
+  var desc=$('desc').value;
+  if(desc.indexOf(pw)!==-1&&!confirm('説明文にパスワードが含まれています。このまま生成しますか？'))return;
+  var self=this;self.disabled=true;self.textContent='生成中…';
   try{
     var data=await encrypt(body,pw);
-    var hint=document.getElementById('hint').value.trim();
-    var prefix='pg'+Math.random().toString(36).slice(2,7);
-    var code=TPL
-      .replace('__HINT__',hint?'<p class="__P__hint">'+esc(hint)+'</p>':'<div style="height:18px"></div>')
-      .split('__P__').join(prefix+'-')
-      .replace('__TITLE__',esc(document.getElementById('title').value))
-      .replace('__DATA__',data)
-      .replace('__ITER__',ITER);
-    // 関数名にハイフンは使えないため置換
-    code=code.split(prefix+'-check').join(prefix+'check');
-    document.getElementById('code').value=code;
-    document.getElementById('prev').srcdoc=code;
-    document.getElementById('out').style.display='block';
+    last={data:data,title:$('title').value,desc:desc,btn:$('btn').value||'開く',theme:theme()};
+    show(build(last));
+    $('out').scrollIntoView({behavior:'smooth'});
   }catch(e){alert('失敗: '+e.message)}
-  this.disabled=false;this.textContent='暗号化して生成';
+  self.disabled=false;self.textContent='暗号化して生成';
 };
-document.getElementById('copy').onclick=function(){
-  var t=document.getElementById('code');t.select();
+$('copy').onclick=function(){
+  var t=$('code'),b=this;t.select();
   (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.resolve(document.execCommand('copy')))
-    .then(function(){document.getElementById('copy').textContent='コピーしました'});
+    .then(function(){b.textContent='コピーしました';setTimeout(function(){b.textContent='コピー'},2000)});
 };
 </script>
 </body>
