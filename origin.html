@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GATE暗号化ツール</title>
+<style>
+body{font-family:'Hiragino Mincho ProN','Noto Serif JP',serif;background:#161412;color:#c8b98a;max-width:760px;margin:0 auto;padding:24px 16px 60px;line-height:1.7}
+h1{font-size:1.1rem;letter-spacing:.2em;font-weight:400;color:#d4c090}
+label{display:block;margin-top:16px;font-size:.8rem;color:#9a8a60}
+input,textarea{width:100%;box-sizing:border-box;background:#0e0c0a;color:#c8b98a;border:1px solid #3a3020;padding:8px;font-family:ui-monospace,monospace;font-size:.85rem}
+textarea{min-height:160px}
+button{margin-top:14px;margin-right:8px;padding:9px 18px;background:transparent;color:#c8b98a;border:1px solid #7a6030;cursor:pointer;font-family:inherit}
+button:hover{background:#7a6030;color:#f5ecd0}
+iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-top:8px}
+.note{font-size:.75rem;color:#7a6a4a}
+</style>
+</head>
+<body>
+<h1>GATE暗号化ツール</h1>
+<p class="note">このページはブラウザ内だけで動作し、入力内容はどこにも送信されません。</p>
+
+<label>タイトル</label>
+<input id="title" value="GATE">
+<label>ヒント表示（空欄で非表示。※パスワード自体は書かないこと）</label>
+<input id="hint" value="">
+<label>パスワード（長いほど安全）</label>
+<input id="pw" type="text" autocomplete="off">
+<label>隠したい本文（HTML）</label>
+<textarea id="body" placeholder="<p>ここに本文</p>"></textarea>
+
+<button id="gen">暗号化して生成</button>
+
+<div id="out" style="display:none">
+  <label>生成されたコード（ブログのHTML編集モードに貼り付け）</label>
+  <textarea id="code" readonly></textarea>
+  <button id="copy">コピー</button>
+  <label>動作テスト</label>
+  <iframe id="prev" sandbox="allow-scripts"></iframe>
+</div>
+
+<script>
+var ITER = 600000;
+var TPL = [
+'<!-- GATE(encrypted) -->',
+'<style>',
+'#__P__wrap *{box-sizing:border-box}',
+'#__P__wrap{margin:2em 0;font-family:\'Noto Serif JP\',\'Hiragino Mincho ProN\',serif}',
+'#__P__gate{position:relative;max-width:420px;margin:0 auto;padding:44px 36px 36px;background:#161412;border:1px solid #3a3020;color:#c8b98a;text-align:center;animation:__P__fade .8s ease both}',
+'#__P__gate::before,#__P__gate::after,#__P__c1,#__P__c2{content:\'\';position:absolute;width:16px;height:16px;border-color:#7a6030;border-style:solid}',
+'#__P__gate::before{top:10px;left:10px;border-width:1px 0 0 1px}',
+'#__P__gate::after{bottom:10px;right:10px;border-width:0 1px 1px 0}',
+'#__P__c1{top:10px;right:10px;border-width:1px 1px 0 0}',
+'#__P__c2{bottom:10px;left:10px;border-width:0 0 1px 1px}',
+'.__P__icon{font-size:1.5rem;margin-bottom:12px;opacity:.5}',
+'.__P__title{font-size:.95rem;font-weight:400;letter-spacing:.25em;color:#d4c090;margin:0 0 4px;border:none!important;padding:0!important;background:none!important}',
+'.__P__rule{width:44px;height:1px;background:linear-gradient(90deg,transparent,#7a6030,transparent);margin:12px auto}',
+'.__P__hint{font-size:.72rem;color:#7a6a4a;letter-spacing:.05em;margin:0 0 24px;line-height:1.7}',
+'#__P__input{display:block;width:100%;padding:10px 12px;margin-bottom:12px;background:#0e0c0a;border:1px solid #3a3020!important;border-radius:0!important;color:#c8b98a!important;font-family:inherit;font-size:.85rem;letter-spacing:.12em;text-align:center;outline:none;transition:border-color .25s;box-shadow:none!important}',
+'#__P__input:focus{border-color:#7a6030!important}',
+'#__P__btn{display:block;width:100%;padding:10px;background:transparent!important;border:1px solid #7a6030!important;border-radius:0!important;color:#c8b98a!important;font-family:inherit;font-size:.78rem;letter-spacing:.35em;cursor:pointer;transition:background .25s,color .25s;box-shadow:none!important;text-decoration:none!important}',
+'#__P__btn:hover{background:#7a6030!important;color:#f5ecd0!important}',
+'#__P__error{font-size:.7rem;color:#9a5050;letter-spacing:.08em;margin-top:10px;min-height:1.1em}',
+'#__P__content{display:none;animation:__P__fade 1s ease both}',
+'@keyframes __P__fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}',
+'@keyframes __P__shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}',
+'.__P__shake{animation:__P__shake .4s ease both}',
+'</style>',
+'<div id="__P__wrap">',
+'<div id="__P__gate"><span id="__P__c1"></span><span id="__P__c2"></span>',
+'<div class="__P__icon">&#x1f441;</div>',
+'<p class="__P__title">__TITLE__</p><div class="__P__rule"></div>',
+'__HINT__',
+'<input type="password" id="__P__input" placeholder="· · · · · · · ·" onkeydown="if(event.key===\'Enter\')__P__check()">',
+'<button id="__P__btn" onclick="__P__check()">解　門</button>',
+'<div id="__P__error"></div></div>',
+'<div id="__P__content"></div>',
+'</div>',
+'<script>',
+'(function(){',
+'var D="__DATA__",N=__ITER__;',
+'function b64(s){var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}',
+'window.__P__check=async function(){',
+'var g=document.getElementById("__P__gate"),e=document.getElementById("__P__error"),c=document.getElementById("__P__content");',
+'var pw=document.getElementById("__P__input").value;',
+'try{',
+'if(!window.crypto||!crypto.subtle)throw new Error("nocrypto");',
+'var d=b64(D),salt=d.slice(0,16),iv=d.slice(16,28),ct=d.slice(28);',
+'var km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);',
+'var key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:N,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);',
+'var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:iv},key,ct);',
+'c.innerHTML=new TextDecoder().decode(pt);g.style.display="none";c.style.display="block";',
+'}catch(x){',
+'e.textContent=(x&&x.message==="nocrypto")?"この環境では復号できません（HTTPSが必要です）":"パスワードが違います";',
+'g.classList.remove("__P__shake");void g.offsetWidth;g.classList.add("__P__shake");',
+'setTimeout(function(){e.textContent=""},2500)}',
+'};})();',
+'<' + '/script>'
+].join('\n');
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function toB64(u8){var s='';for(var i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return btoa(s)}
+
+async function encrypt(plain, pw){
+  var salt=crypto.getRandomValues(new Uint8Array(16)),
+      iv=crypto.getRandomValues(new Uint8Array(12));
+  var km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:ITER,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt']);
+  var ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(plain)));
+  var out=new Uint8Array(16+12+ct.length);
+  out.set(salt,0);out.set(iv,16);out.set(ct,28);
+  return toB64(out);
+}
+
+document.getElementById('gen').onclick=async function(){
+  var pw=document.getElementById('pw').value,
+      body=document.getElementById('body').value;
+  if(!pw||!body){alert('パスワードと本文を入力してください');return}
+  this.disabled=true;this.textContent='生成中…';
+  try{
+    var data=await encrypt(body,pw);
+    var hint=document.getElementById('hint').value.trim();
+    var prefix='pg'+Math.random().toString(36).slice(2,7);
+    var code=TPL
+      .replace('__HINT__',hint?'<p class="__P__hint">'+esc(hint)+'</p>':'<div style="height:18px"></div>')
+      .split('__P__').join(prefix+'-')
+      .replace('__TITLE__',esc(document.getElementById('title').value))
+      .replace('__DATA__',data)
+      .replace('__ITER__',ITER);
+    // 関数名にハイフンは使えないため置換
+    code=code.split(prefix+'-check').join(prefix+'check');
+    document.getElementById('code').value=code;
+    document.getElementById('prev').srcdoc=code;
+    document.getElementById('out').style.display='block';
+  }catch(e){alert('失敗: '+e.message)}
+  this.disabled=false;this.textContent='暗号化して生成';
+};
+document.getElementById('copy').onclick=function(){
+  var t=document.getElementById('code');t.select();
+  (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.resolve(document.execCommand('copy')))
+    .then(function(){document.getElementById('copy').textContent='コピーしました'});
+};
+</script>
+</body>
+</html>
