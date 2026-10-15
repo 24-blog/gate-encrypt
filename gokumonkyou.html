@@ -17,14 +17,14 @@ iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-t
 </style>
 </head>
 <body>
-<h1>GATE暗号化ツール</h1>
+<h1>封印呪具</h1>
 <p class="note">このページはブラウザ内だけで動作し、入力内容はどこにも送信されません。</p>
 
 <label>タイトル</label>
 <input id="title" value="獄⛩️疆">
-<label>ヒント表示（空欄で非表示。※パスワードを書かないこと）</label>
+<label>開門の手掛かり（空欄で非表示）</label>
 <input id="hint" value="">
-<label>パスワード（長いほど安全）</label>
+<label>降ろす神の名</label>
 <input id="pw" type="text" autocomplete="off">
 <label>隠したい本文（HTML）</label>
 <textarea id="body" placeholder="<p>ここに本文</p>"></textarea>
@@ -91,7 +91,7 @@ var TPL = [
 'var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:iv},key,ct);',
 'c.innerHTML=new TextDecoder().decode(pt);g.style.display="none";c.style.display="block";',
 '}catch(x){',
-'e.textContent=(x&&x.message==="nocrypto")?"この環境では復号できません（HTTPSが必要です）":"パスワードが違います";',
+'e.textContent=(x&&x.message==="nocrypto")?"この環境では復号できません（HTTPSが必要です）":"開門失敗";',
 'g.classList.remove("__P__shake");void g.offsetWidth;g.classList.add("__P__shake");',
 'setTimeout(function(){e.textContent=""},2500)}',
 '};})();',
