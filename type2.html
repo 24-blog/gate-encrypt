@@ -32,7 +32,7 @@ iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-t
 <button id="gen">封印する</button>
 
 <div id="out" style="display:none">
-  <label>呪具を顕現させるための秘呪</label>
+  <label>呪具を顕現させる秘呪</label>
   <textarea id="code" readonly></textarea>
   <button id="copy">秘呪を記憶</button>
   <label>完成図</label>
@@ -115,8 +115,8 @@ async function encrypt(plain, pw){
 document.getElementById('gen').onclick=async function(){
   var pw=document.getElementById('pw').value,
       body=document.getElementById('body').value;
-  if(!pw||!body){alert('パスワードと本文を入力してください');return}
-  this.disabled=true;this.textContent='生成中…';
+  if(!pw||!body){alert('数霊と文を入力してください');return}
+  this.disabled=true;this.textContent='封印中…';
   try{
     var data=await encrypt(body,pw);
     var hint=document.getElementById('hint').value.trim();
@@ -133,12 +133,12 @@ document.getElementById('gen').onclick=async function(){
     document.getElementById('prev').srcdoc=code;
     document.getElementById('out').style.display='block';
   }catch(e){alert('失敗: '+e.message)}
-  this.disabled=false;this.textContent='暗号化して生成';
+  this.disabled=false;this.textContent='常世へ封印';
 };
 document.getElementById('copy').onclick=function(){
   var t=document.getElementById('code');t.select();
   (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.resolve(document.execCommand('copy')))
-    .then(function(){document.getElementById('copy').textContent='コピーしました'});
+    .then(function(){document.getElementById('copy').textContent='記憶しました'});
 };
 </script>
 </body>
