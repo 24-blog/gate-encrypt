@@ -14,6 +14,10 @@ button{margin-top:14px;margin-right:8px;padding:9px 18px;background:transparent;
 button:hover{background:#7a6030;color:#f5ecd0}
 iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-top:8px}
 .note{font-size:.75rem;color:#7a6a4a}
+.pwbox{position:relative}
+.pwbox input{padding-right:44px}
+.pwbox button,.pwbox button:hover{position:absolute;top:0;bottom:0;right:0;margin:0;padding:0 12px;border:none;background:transparent;color:#c8b98a;font-size:1rem;opacity:.6}
+.pwbox button.on{opacity:1}
 </style>
 </head>
 <body>
@@ -24,8 +28,8 @@ iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-t
 <input id="title" value="獄⛩️疆">
 <label>開門の手掛かり（空欄で非表示）</label>
 <input id="hint" value="">
-<label>降神する数霊（異国文字可）</label>
-<input id="pw" type="text" inputmode="url" lang="en" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="ime-mode:disabled">
+<label>降神する数霊</label>
+<div class="pwbox"><input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button type="button" id="pwtoggle" aria-label="toggle visibility">👁</button></div>
 <label>隠したい文（HTML）</label>
 <textarea id="body" placeholder="<p>ここに記す</p>"></textarea>
 
@@ -140,6 +144,17 @@ document.getElementById('copy').onclick=function(){
   (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.resolve(document.execCommand('copy')))
     .then(function(){document.getElementById('copy').textContent='記憶しました'});
 };
+</script>
+<script>
+(function(){
+  var pw=document.getElementById("pw"),bt=document.getElementById("pwtoggle");
+  bt.addEventListener("mousedown",function(e){e.preventDefault()});
+  bt.addEventListener("click",function(){
+    var show=pw.type==="password";
+    pw.type=show?"text":"password";
+    bt.classList.toggle("on",show);
+  });
+})();
 </script>
 </body>
 </html>
