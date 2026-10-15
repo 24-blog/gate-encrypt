@@ -18,13 +18,13 @@ iframe{width:100%;height:340px;border:1px solid #3a3020;background:#fff;margin-t
 </head>
 <body>
 <h1>封印呪具生成</h1>
-<p class="note">文を呪力で常世に閉じ込めます。開門には神の助けが必要です。</p>
+<p class="note">文を常世に閉じ込めます。開門には数霊の助けが必要です。</p>
 
 <label>タイトル</label>
 <input id="title" value="獄⛩️疆">
 <label>開門の手掛かり（空欄で非表示）</label>
 <input id="hint" value="">
-<label>力を借りる神の名</label>
+<label>降神する数霊（異国文字可）</label>
 <input id="pw" type="text" autocomplete="off">
 <label>隠したい秘文（HTML）</label>
 <textarea id="body" placeholder="<p>ここに記す</p>"></textarea>
@@ -91,7 +91,7 @@ var TPL = [
 'var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:iv},key,ct);',
 'c.innerHTML=new TextDecoder().decode(pt);g.style.display="none";c.style.display="block";',
 '}catch(x){',
-'e.textContent=(x&&x.message==="nocrypto")?"この環境では復号できません（HTTPSが必要です）":"開門失敗";',
+'e.textContent=(x&&x.message==="nocrypto")?"この環境では復号できません（HTTPSが必要です）":"開門に失敗しました";',
 'g.classList.remove("__P__shake");void g.offsetWidth;g.classList.add("__P__shake");',
 'setTimeout(function(){e.textContent=""},2500)}',
 '};})();',
